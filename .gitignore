@@ -1,0 +1,5 @@
+# Godot 4
+.import/
+.godot/
+*.tmp
+*.bak

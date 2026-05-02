@@ -1,0 +1,28 @@
+; Engine configuration file — Godot 4.3+
+
+config_version=5
+
+[application]
+
+config/name="Noah's Game"
+config/description="Creative LEGO-like sandbox vertical slice (solo)."
+run/main_scene="res://scenes/ui/main_menu.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+InputMapSetup="*res://scripts/autoload/input_map_setup.gd"
+SaveManager="*res://scripts/autoload/save_manager.gd"
+PlayerProfile="*res://scripts/autoload/player_profile.gd"
+GameFlow="*res://scripts/autoload/game_flow.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+
+[layer_names]
+
+3d_physics/layer_1="environment"
+3d_physics/layer_2="character"
