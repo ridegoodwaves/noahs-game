@@ -133,8 +133,8 @@ func _update_hud() -> void:
 	var l: Label = _hud.get_node_or_null("VBox/Status") as Label
 	if l == null:
 		return
-	var tier_names := ["poor", "average", "rich"]
-	var tier := tier_names[clampi(PlayerProfile.wealth_tier, 0, 2)]
+	var tier_names: PackedStringArray = ["poor", "average", "rich"]
+	var tier: String = tier_names[clampi(PlayerProfile.wealth_tier, 0, 2)]
 	l.text = "Biome: %s | Mode: %s\nStuds: %s | Blocks (dirt/brick/glass): %d/%d/%d\nTier: %s | Move speed x%.2f\nLMB break | RMB place (dirt) | T TNT | F snack | M menu | Esc mouse" % [
 		GameFlow.biome_name(_biome),
 		"gallery" if _gallery else "fork save",
