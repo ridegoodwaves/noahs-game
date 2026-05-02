@@ -125,7 +125,7 @@ flowchart TB
 
 ## Implementation Units
 
-- [ ] U1. **Commit Web export preset (`export_presets.cfg`)**
+- [x] U1. **Commit Web export preset (`export_presets.cfg`)**
 
 **Goal:** Version-controlled export definition so CLI and editor agree.
 
@@ -152,7 +152,7 @@ flowchart TB
 
 ---
 
-- [ ] U2. **Headless export script (Godot download + `godot --export-release`)**
+- [x] U2. **Headless export script (Godot download + `godot --export-release`)**
 
 **Goal:** One script used locally and by Vercel to populate **`dist/web/`**.
 
@@ -181,7 +181,7 @@ flowchart TB
 
 ---
 
-- [ ] U3. **`npm run build` orchestration + Vercel `outputDirectory`**
+- [x] U3. **`npm run build` orchestration + Vercel `outputDirectory`**
 
 **Goal:** `npm run build` performs Web export and sets deploy root to **`dist/web`**.
 
@@ -209,7 +209,7 @@ flowchart TB
 
 ---
 
-- [ ] U4. **`vercel.json` HTTP headers for WebAssembly**
+- [x] U4. **`vercel.json` HTTP headers for WebAssembly**
 
 **Goal:** Serve **`.wasm`** with **`application/wasm`**; document **COOP/COEP** only if threads enabled.
 
@@ -231,7 +231,7 @@ flowchart TB
 
 ---
 
-- [ ] U5. **GitHub Actions workflow (optional verify)**
+- [x] U5. **GitHub Actions workflow (optional verify)**
 
 **Goal:** PRs validate that export **still builds** on Linux.
 
@@ -254,7 +254,7 @@ flowchart TB
 
 ---
 
-- [ ] U6. **Documentation pass**
+- [x] U6. **Documentation pass**
 
 **Goal:** Operators know version pins, URL limits, and Safari caveats.
 

@@ -48,16 +48,36 @@ godot --headless --path . -s tests/test_shop_tier_rules.gd
 - Requirements: `docs/brainstorms/lego-creative-worlds-game-requirements.md`
 - Stack: `docs/tech-stack.md`
 - TNT QA notes: `docs/verification/tnt-entity-safety.md`
+- Web + Vercel pipeline: `docs/plans/2026-05-02-002-feat-godot-web-vercel-ci-plan.md`
+
+## Browser build (Web export)
+
+Pinned version: **`scripts/godot-version.env`** (`4.3-stable` GitHub release). Install **matching export templates** in the editor (**Editor → Manage Export Templates**) or let CI / `scripts/export-web.sh` unpack the official **`.tpz`**.
+
+```bash
+bash scripts/export-web.sh
+```
+
+Outputs **`dist/web/`** (`index.html`, `.wasm`, `.pck`, …). Not committed (see `.gitignore`).
 
 ## Deploying on Vercel
 
-This repository is a **Godot** game, not a typical Vercel web app. If you connect the repo without setting **Output Directory**, Vercel has nothing to serve at `/`, which often shows as **404 NOT_FOUND**.
+**Build:** `npm run build` runs **`scripts/vercel-build.js`**, which executes **`scripts/export-web.sh`** (downloads Godot + templates on Linux, then headless export).
 
-This repo includes **`public/index.html`** (a small landing page) and **`vercel.json`** so `npm run build` validates the site and deploy outputs **`public/`**.
+**Vercel project settings**
 
-In the Vercel project: **Settings → General** — **Framework Preset**: Other; **Build Command**: `npm run build`; **Output Directory**: `public`; **Install Command**: `npm install`.
+| Setting | Value |
+|---------|--------|
+| Framework Preset | Other |
+| Install Command | `npm install` |
+| Build Command | `npm run build` |
+| Output Directory | **`dist/web`** |
 
-To host the **playable game** in the browser, export **Godot Web (HTML5)** from the editor (or CI with Godot headless) and point **Output Directory** at that export folder instead of `public`.
+**Headers:** `vercel.json` sets **`Content-Type: application/wasm`** for `*.wasm` and **`application/octet-stream`** for `*.pck`. Threaded WASM + **SharedArrayBuffer** is **not** enabled in the Web preset (no COOP/COEP required for default single-thread export).
+
+**Limits:** First deploy may be slow (downloads ~100MB+); watch **bundle size** and **build timeout** if Vercel tier is restrictive.
+
+**Legacy stub:** `public/index.html` was an early landing-only deploy; production now serves the **game** from **`dist/web/`**.
 
 ---
 
