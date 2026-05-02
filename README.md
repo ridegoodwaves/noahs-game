@@ -49,6 +49,18 @@ godot --headless --path . -s tests/test_shop_tier_rules.gd
 - Stack: `docs/tech-stack.md`
 - TNT QA notes: `docs/verification/tnt-entity-safety.md`
 
+## Deploying on Vercel
+
+This repository is a **Godot** game, not a typical Vercel web app. If you connect the repo without setting **Output Directory**, Vercel has nothing to serve at `/`, which often shows as **404 NOT_FOUND**.
+
+This repo includes **`public/index.html`** (a small landing page) and **`vercel.json`** so `npm run build` validates the site and deploy outputs **`public/`**.
+
+In the Vercel project: **Settings → General** — **Framework Preset**: Other; **Build Command**: `npm run build`; **Output Directory**: `public`; **Install Command**: `npm install`.
+
+To host the **playable game** in the browser, export **Godot Web (HTML5)** from the editor (or CI with Godot headless) and point **Output Directory** at that export folder instead of `public`.
+
+---
+
 ## License
 
 See repository root (add `LICENSE` when you choose one).
