@@ -14,19 +14,30 @@ var _save_accum := 0.0
 @onready var _blocks_root: Node3D = $BlocksRoot
 @onready var _creature: Node3D = $TestCreature
 @onready var _hud: CanvasLayer = $HUD
+@onready var _world_env: WorldEnvironment = $WorldEnvironment
 
-var _multimesh_instance: MultiMeshInstance3D
+var _block_layers: Array[MultiMeshInstance3D] = []
 
 
 func _ready() -> void:
 	_biome = GameFlow.pending_biome
 	_gallery = GameFlow.gallery_mode
+	if _world_env and _world_env.environment:
+		GraphicsConfig.tune_environment(_world_env.environment)
+		GraphicsConfig.tune_biome_ambient(_world_env.environment, _biome)
+	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	if sun:
+		GraphicsConfig.tune_directional_light(sun)
+	var fill := get_node_or_null("FillLight") as OmniLight3D
+	if fill:
+		GraphicsConfig.tune_fill_light(fill)
 	_load_world_state()
 	if _creature:
 		_creature.global_position = Vector3(3, 1, 3)
 		_creature.add_to_group("creature")
-	_setup_multimesh()
+	_setup_block_layers()
 	_player.global_position = _read_player_spawn()
+	_style_ground_plane()
 	_rebuild_blocks_visual()
 
 
@@ -76,47 +87,61 @@ func _read_player_spawn() -> Vector3:
 	return Vector3(0, 2, 4)
 
 
-func _setup_multimesh() -> void:
-	var cube := BoxMesh.new()
-	cube.size = Vector3.ONE * BlockWorld.CELL_SIZE * 0.98
-	_multimesh_instance = MultiMeshInstance3D.new()
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = cube
-	_multimesh_instance.multimesh = mm
-	_blocks_root.add_child(_multimesh_instance)
+func _setup_block_layers() -> void:
+	var brick_mesh := BrickMeshBuilder.build_toy_brick(BlockWorld.CELL_SIZE)
+	var accent := BrickMaterials.biome_accent(_biome)
+	var mats: Array[Material] = [
+		BrickMaterials.make_opaque_dirt(accent),
+		BrickMaterials.make_opaque_brick(accent),
+		BrickMaterials.make_glass(accent),
+	]
+	_block_layers.clear()
+	for i in range(3):
+		var mmi := MultiMeshInstance3D.new()
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = brick_mesh
+		mmi.multimesh = mm
+		mmi.material_override = mats[i]
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		mmi.name = "Blocks_%d" % i
+		_blocks_root.add_child(mmi)
+		_block_layers.append(mmi)
 
 
-func _biome_base_color() -> Color:
-	match _biome:
-		GameFlow.BiomeId.FOREST:
-			return Color(0.22, 0.46, 0.22)
-		GameFlow.BiomeId.UNDERWATER:
-			return Color(0.25, 0.55, 0.72)
-		GameFlow.BiomeId.MOUNTAINS:
-			return Color(0.55, 0.55, 0.58)
-		GameFlow.BiomeId.DESERT:
-			return Color(0.85, 0.72, 0.45)
-		GameFlow.BiomeId.CAVE:
-			return Color(0.35, 0.28, 0.22)
-		GameFlow.BiomeId.CITY:
-			return Color(0.45, 0.45, 0.48)
-		GameFlow.BiomeId.RURAL_TOWN:
-			return Color(0.55, 0.62, 0.42)
-	return Color(0.5, 0.5, 0.5)
+func _style_ground_plane() -> void:
+	var ground_mi := get_node_or_null("Ground/MeshInstance3D") as MeshInstance3D
+	if ground_mi == null:
+		return
+	var accent := BrickMaterials.biome_accent(_biome)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.35, 0.42, 0.32).lerp(accent, 0.35)
+	mat.roughness = 0.88
+	mat.metallic = 0.0
+	ground_mi.material_override = mat
+
+
+func _block_type_bucket(block_type: int) -> int:
+	return clampi(block_type % 3, 0, 2)
 
 
 func _rebuild_blocks_visual() -> void:
 	var cells := block_world.all_cells()
-	var mm := _multimesh_instance.multimesh
-	mm.instance_count = cells.size()
+	var buckets: Array = [[], [], []]
 	for i in range(cells.size()):
 		var c: Vector3i = cells[i]
+		var t := block_world.get_block(c)
+		var b := _block_type_bucket(t)
 		var xf := Transform3D(Basis(), Vector3(c) + Vector3.ONE * 0.5 * BlockWorld.CELL_SIZE)
-		mm.set_instance_transform(i, xf)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = _biome_base_color()
-	_multimesh_instance.material_override = mat
+		(buckets[b] as Array).append(xf)
+
+	for layer_idx in range(_block_layers.size()):
+		var mmi: MultiMeshInstance3D = _block_layers[layer_idx]
+		var mm := mmi.multimesh
+		var list: Array = buckets[layer_idx]
+		mm.instance_count = list.size()
+		for j in range(list.size()):
+			mm.set_instance_transform(j, list[j])
 
 
 func _process(delta: float) -> void:
@@ -206,6 +231,9 @@ func _try_place_tnt() -> void:
 	tnt.mesh = mesh
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(0.9, 0.35, 0.15)
+	mat.roughness = 0.45
+	mat.clearcoat_enabled = true
+	mat.clearcoat = 0.3
 	tnt.material_override = mat
 	tnt.global_position = Vector3(place_cell) + Vector3.ONE * 0.5
 	add_child(tnt)
