@@ -17,6 +17,7 @@ var food_buffs: FoodBuffs = FoodBuffs.new()
 func _ready() -> void:
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	GraphicsConfig.tune_player_camera(_camera)
 
 
 func _unhandled_input(event: InputEvent) -> void:

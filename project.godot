@@ -16,6 +16,7 @@ InputMapSetup="*res://scripts/autoload/input_map_setup.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 PlayerProfile="*res://scripts/autoload/player_profile.gd"
 GameFlow="*res://scripts/autoload/game_flow.gd"
+GraphicsConfig="*res://scripts/autoload/graphics_config.gd"
 
 [display]
 
