@@ -1,0 +1,38 @@
+[
+  {
+    "id": "starter_island",
+    "title": "Starter island lookout",
+    "price": 15,
+    "min_wealth_tier": 0,
+    "requires_flag": "",
+    "steps": [
+      "Raise a 4x4 dirt pad at sea level.",
+      "Add brick pillars at corners.",
+      "Cap with glass slabs for a skylight."
+    ]
+  },
+  {
+    "id": "hilltop_village",
+    "title": "Hilltop village slice",
+    "price": 40,
+    "min_wealth_tier": 1,
+    "requires_flag": "",
+    "steps": [
+      "Terrace the hillside with three levels.",
+      "Place rural pathways between terraces.",
+      "Top with a glass lantern tower."
+    ]
+  },
+  {
+    "id": "sky_arcade",
+    "title": "Sky arcade framework",
+    "price": 120,
+    "min_wealth_tier": 2,
+    "requires_flag": "",
+    "steps": [
+      "Stack brick arches into a corridor.",
+      "Line the floor with glass panels.",
+      "Extend outward with dirt scaffolding."
+    ]
+  }
+]
