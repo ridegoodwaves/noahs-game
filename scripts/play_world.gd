@@ -106,17 +106,6 @@ func _biome_base_color() -> Color:
 	return Color(0.5, 0.5, 0.5)
 
 
-func _block_color(block_type: int) -> Color:
-	var base := _biome_base_color()
-	match block_type % 3:
-		0:
-			return base.darkened(0.08)
-		1:
-			return base.lightened(0.12)
-		_:
-			return Color(base.r, base.g, base.b, 0.65)
-
-
 func _rebuild_blocks_visual() -> void:
 	var cells := block_world.all_cells()
 	var mm := _multimesh_instance.multimesh
